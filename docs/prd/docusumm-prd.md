@@ -134,13 +134,40 @@
 
 **목표**: 메인 대시보드, 사이드바, 입력 패널 등 핵심 화면의 퍼블리싱 및 반응형 UI 구현 (기능 제외)
 
-**예상 스토리 수**: 3
+-   [x] **Story 1.1: 프로젝트 기본 설정 및 레이아웃 구조 잡기**
+    -   Next.js 16, Tailwind CSS, Shadcn UI 설치 및 초기화 완료
+    -   좌측 사이드바 + 우측 메인 영역의 기본 레이아웃 구현 (`layout.tsx`)
+    -   반응형 처리 (모바일에서 사이드바 동작)
+-   [x] **Story 1.2: 입력 패널(Input Panel) UI 구현**
+    -   Text/YouTube 탭 인터페이스 구현
+    -   Textarea(자동 높이 조절) 및 Input 필드 배치
+    -   URL 유효성 검사 UI (Visual Feedback)
+-   [x] **Story 1.3: 요약 결과 카드 및 로딩 UI 구현**
+    -   결과 로딩 시 스켈레톤(Skeleton) UI 표시
+    -   결과 카드: TL;DR 섹션 + Markdown 본문 섹션
+    -   복사/공유 액션 버튼 배치
+-   [x] **Story 1.4: 사이드바 히스토리 및 상세 페이지 UI 구현** (추가됨)
+    -   사이드바에 히스토리 목록 (Mock Data) 표시
+    -   히스토리 클릭 시 상세 페이지 (`/dashboard/history/[id]`) 이동 구현
+    -   클라이언트 사이드 네비게이션 최적화
 
 ### Epic 2: 핵심 기능 (Core Features) - 요약 엔진 및 결과 저장
 
 **목표**: UI에 Gemini API를 연동하여 요약을 수행하고, 결과를 데이터베이스에 저장하는 전체 파이프라인 구축
 
-**예상 스토리 수**: 4
+-   [x] **Story 2.1: 데이터베이스 스키마 설계 및 ORM 설정**
+    -   Supabase 연동 및 Drizzle ORM 설정 (`drizzle.config.ts`)
+    -   `users`, `summaries` 테이블 스키마 정의 및 마이그레이션 완료
+-   [x] **Story 2.2: Gemini API 연동 및 텍스트 요약 로직 구현**
+    -   Google Gemini 2.0 Flash 모델 연동 (`lib/gemini`, `@google/genai`)
+    -   프롬프트 엔지니어링 (3줄 요약 + 상세 요약 구조화, 한국어 출력)
+    -   Server Action (`actions/summarize.ts`) 연결
+-   [x] **Story 2.3: YouTube 영상 요약 로직 구현**
+    -   YouTube URL 유효성 검증
+    -   Gemini Multimodal 기능을 활용한 영상 요약 (URL 직접 처리)
+-   [x] **Story 2.4: 요약 결과 저장 및 UI 연동**
+    -   요약 완료 후 `summaries` 테이블에 결과 `INSERT`
+    -   UI에 비동기 상태 반영 및 결과 카드 렌더링
 
 ### Epic 3: 인증 및 계정 관리 (히스토리)
 
