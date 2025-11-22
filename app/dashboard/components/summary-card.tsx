@@ -41,7 +41,7 @@ export function SummaryCard({ result }: SummaryCardProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-p:leading-relaxed text-foreground/90">
+                    <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-p:leading-relaxed [&_p]:text-foreground [&_strong]:text-foreground [&_li]:text-foreground [&_ul]:text-foreground [&_ol]:text-foreground [&_*]:text-foreground">
                         <ReactMarkdown>{result.tldr}</ReactMarkdown>
                     </div>
                 </CardContent>
@@ -79,7 +79,7 @@ export function SummaryCard({ result }: SummaryCardProps) {
                     </div>
                 </div>
 
-                <article className="prose prose-neutral max-w-none dark:prose-invert prose-headings:font-semibold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-a:text-primary hover:prose-a:underline text-foreground">
+                <article className="prose prose-neutral max-w-none dark:prose-invert prose-headings:font-semibold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-a:text-primary hover:prose-a:underline [&_p]:!text-foreground [&_strong]:!text-foreground [&_li]:!text-foreground [&_ul]:!text-foreground [&_ol]:!text-foreground [&_blockquote]:!text-foreground [&_code]:!text-foreground [&_pre]:!text-foreground [&_*]:!text-foreground">
                     <ReactMarkdown>{result.content}</ReactMarkdown>
                 </article>
             </div>
