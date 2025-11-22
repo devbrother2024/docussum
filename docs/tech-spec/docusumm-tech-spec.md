@@ -19,8 +19,9 @@ docusumm/
 │   ├── ui/                  # Shadcn UI (Atomic)
 │   ├── summary/             # 요약 관련 컴포넌트
 │   └── payment/             # 결제 관련 컴포넌트
+├── db/                      # Drizzle ORM 및 스키마 정의
 ├── lib/                     # 비즈니스 로직 및 통합
-│   ├── supabase/            # 데이터베이스 클라이언트
+│   ├── supabase/            # Supabase Client (Auth용)
 │   ├── gemini/              # AI 로직
 │   ├── stripe/              # 결제 로직
 │   └── resend/              # 이메일 로직
@@ -28,6 +29,8 @@ docusumm/
 ├── types/                   # TypeScript 정의
 ├── utils/                   # 헬퍼 함수
 ├── middleware.ts            # 인증 미들웨어
+├── drizzle/                 # Drizzle 마이그레이션 파일
+├── drizzle.config.ts        # Drizzle 설정 파일
 └── public/                  # 정적 파일
 ```
 
@@ -38,6 +41,7 @@ docusumm/
 -   **프론트엔드**: Next.js 16 기반 App Router 사용. `src` 폴더 없이 루트 레벨 구조 채택.
 -   **백엔드**: 별도 서버 없이 Next.js API Routes (Serverless Functions) 활용.
 -   **데이터베이스**: Supabase (PostgreSQL)를 사용하여 관계형 데이터 관리.
+-   **ORM**: Drizzle ORM을 사용하여 타입 안전한(Type-safe) 쿼리 및 스키마 관리.
 -   **AI 엔진**: Google Gemini API를 활용한 요약 기능 구현.
 -   **결제 시스템**: Stripe Checkout 및 Webhook을 통한 크레딧 시스템 구현.
 
@@ -55,6 +59,7 @@ docusumm/
 -   **스타일링**: Tailwind CSS, Shadcn UI
 -   **인증**: Supabase Auth
 -   **데이터베이스**: Supabase (PostgreSQL)
+-   **ORM**: Drizzle ORM
 -   **AI 모델**: Google Gemini 2.0 Flash (gemini-2.0-flash)
 -   **결제**: Stripe
 -   **이메일**: Resend
@@ -63,7 +68,15 @@ docusumm/
 
 ### 1. 데이터베이스 스키마 (Database Schema)
 
+**Note**: 스키마 관리는 Drizzle ORM을 사용하여 TypeScript로 정의 및 마이그레이션합니다.
+
+```typescript
+// Drizzle Schema Example (db/schema.ts)
+// users, summaries, credit_transactions 테이블 정의
+```
+
 ```sql
+-- Reference SQL (Drizzle Kit push로 생성됨)
 -- users: 사용자 정보 테이블
 create table public.users (
   id uuid references auth.users not null primary key,
@@ -119,15 +132,17 @@ create table public.credit_transactions (
 
 ### 단계 2: 핵심 기능 (Epic 2)
 
+-   Drizzle ORM 설정 (`db/schema.ts`, `drizzle.config.ts`) 및 Supabase 연결.
 -   `lib/gemini` 구현.
 -   UI와 `/api/summary` 연결.
+-   요약 완료 후 결과를 `summaries` 테이블에 저장하는 로직 구현 (Drizzle 사용).
 -   로딩 상태(Loading State) 처리.
 
 ### 단계 3: 인증 및 계정 (Epic 3)
 
 -   Supabase Auth 설정.
 -   `Middleware`를 통한 보호된 라우트(Protected Routes) 구현.
--   DB 연동하여 히스토리 기능 구현.
+-   DB(`summaries` 테이블) 연동하여 사이드바 히스토리 조회 및 상세 보기 기능 구현.
 
 ### 단계 4: 결제 시스템 (Epic 4)
 
