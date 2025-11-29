@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { InputPanel } from './components/input-panel'
 import { SummaryCard, SummaryResult } from './components/summary-card'
 import { SummarySkeleton } from './components/summary-skeleton'
@@ -12,7 +13,27 @@ export default function DashboardPage() {
     const [summaryResult, setSummaryResult] = useState<SummaryResult | null>(
         null
     )
-    // const { toast } = useToast() // Assuming we have this hook, if not we might need to add Toaster
+    const searchParams = useSearchParams()
+    const paymentProcessed = useRef(false)
+
+    // Handle payment success/cancelled notifications
+    useEffect(() => {
+        const paymentStatus = searchParams.get('payment')
+
+        // Prevent duplicate processing
+        if (paymentProcessed.current) return
+
+        if (paymentStatus === 'success') {
+            paymentProcessed.current = true
+            alert('크레딧 충전이 완료되었습니다!')
+            // Remove query parameter without triggering re-render
+            window.history.replaceState(null, '', '/dashboard')
+        } else if (paymentStatus === 'cancelled') {
+            paymentProcessed.current = true
+            // Silently handle cancellation
+            window.history.replaceState(null, '', '/dashboard')
+        }
+    }, [searchParams])
 
     const handleSummarize = async (
         type: 'text' | 'youtube',
@@ -31,8 +52,8 @@ export default function DashboardPage() {
                 alert(`Error: ${result.error}`) // Simple alert for now
             }
         } catch (error) {
-            console.error("An unexpected error occurred", error)
-            alert("An unexpected error occurred")
+            console.error('An unexpected error occurred', error)
+            alert('An unexpected error occurred')
         } finally {
             setIsLoading(false)
         }

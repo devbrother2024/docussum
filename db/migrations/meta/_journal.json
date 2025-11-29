@@ -8,6 +8,13 @@
       "when": 1763816162923,
       "tag": "0000_strange_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764403904477,
+      "tag": "0001_nebulous_lionheart",
+      "breakpoints": true
     }
   ]
 }

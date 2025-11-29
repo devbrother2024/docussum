@@ -18,6 +18,7 @@ import { getUserInfo } from '@/app/dashboard/components/user-info'
 import { formatDistanceToNow } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { logout } from '@/app/dashboard/actions/logout'
+import { CreditTopupDialog } from '@/app/dashboard/components/credit-topup-dialog'
 
 function formatDate(date: Date) {
     const now = new Date()
@@ -142,6 +143,7 @@ export async function AppSidebar() {
                         <div className="text-muted-foreground text-xs mt-1 truncate">
                             {userInfo.email}
                         </div>
+                        <CreditTopupDialog />
                     </div>
                 )}
                 <SidebarMenu>

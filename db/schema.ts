@@ -16,3 +16,11 @@ export const summaries = pgTable('summaries', {
     content: text('content'),
     createdAt: timestamp('created_at').defaultNow().notNull()
 })
+
+export const creditTransactions = pgTable('credit_transactions', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').notNull(), // Foreign key to users
+    amount: integer('amount').notNull(), // Positive for charge/bonus, negative for usage
+    type: text('type').notNull(), // 'charge', 'bonus', 'usage'
+    createdAt: timestamp('created_at').defaultNow().notNull()
+})
