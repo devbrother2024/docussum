@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { Content, Part } from '@google/genai'
 import { createClient } from '@/lib/supabase/server'
+import { sendSummaryEmail } from './send-email'
 
 interface SummaryResult {
     tldr: string
@@ -142,19 +143,32 @@ export async function generateSummary(
         }
 
         // Save summary
-        await db.insert(summaries).values({
-            userId: user.id,
-            type: type,
-            originalContent: content,
-            tldr: parsedResult.tldr,
-            content: parsedResult.content
-        })
+        const [insertedSummary] = await db
+            .insert(summaries)
+            .values({
+                userId: user.id,
+                type: type,
+                originalContent: content,
+                tldr: parsedResult.tldr,
+                content: parsedResult.content
+            })
+            .returning()
 
         // Deduct credit
         await db
             .update(users)
             .set({ credits: userData.credits - 1 })
             .where(eq(users.id, user.id))
+
+        // Send email notification (non-blocking)
+        sendSummaryEmail({
+            to: userData.email,
+            tldr: parsedResult.tldr,
+            summaryId: insertedSummary.id
+        }).catch(error => {
+            // Log error but don't fail the request
+            console.error('Failed to send summary email:', error)
+        })
 
         // Refresh dashboard/history
         revalidatePath('/dashboard')
