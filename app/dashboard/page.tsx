@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { InputPanel } from "./components/input-panel";
 import { SummaryCard, SummaryResult } from "./components/summary-card";
@@ -8,11 +8,7 @@ import { SummarySkeleton } from "./components/summary-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { generateSummary } from "@/actions/summarize";
 
-export default function DashboardPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [summaryResult, setSummaryResult] = useState<SummaryResult | null>(
-    null
-  );
+function PaymentHandler() {
   const searchParams = useSearchParams();
   const paymentProcessed = useRef(false);
 
@@ -34,6 +30,15 @@ export default function DashboardPage() {
       window.history.replaceState(null, "", "/dashboard");
     }
   }, [searchParams]);
+
+  return null;
+}
+
+export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [summaryResult, setSummaryResult] = useState<SummaryResult | null>(
+    null
+  );
 
   const handleSummarize = async (type: "text" | "youtube", content: string) => {
     setIsLoading(true);
@@ -58,6 +63,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto py-10 px-4 md:px-6 space-y-10">
+      <Suspense fallback={null}>
+        <PaymentHandler />
+      </Suspense>
       <div className="text-center space-y-2 mb-4">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
           AI로 모든 것을 요약하세요
