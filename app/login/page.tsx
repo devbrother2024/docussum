@@ -21,10 +21,13 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const supabase = createClient();
+      // 프로덕션에서는 환경 변수 사용, 개발 환경에서는 window.location.origin 사용
+      const redirectTo =
+        process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${redirectTo}/auth/callback`,
         },
       });
 
