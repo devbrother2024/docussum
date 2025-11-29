@@ -173,7 +173,20 @@
 
 **목표**: 사용자 식별(Supabase) 및 개인별 저장된 요약 히스토리 조회/관리 기능 구현
 
-**예상 스토리 수**: 3
+-   [x] **Story 3.1: 인증 환경 설정 및 로그인 UI 구현**
+    -   Supabase SSR 패키지 설치 및 클라이언트 유틸리티 구성
+    -   로그인 페이지 UI 및 Google OAuth 연동
+    -   OAuth 콜백 처리 (`/auth/callback`) 구현
+-   [x] **Story 3.2: 사용자 관리 및 무료 크레딧 지급**
+    -   `public.users` 테이블 연동을 위한 Database Trigger 작성
+    -   신규 가입 시 3 크레딧 자동 지급 로직 구현
+-   [x] **Story 3.3: 보안 및 라우트 보호**
+    -   Middleware 구현으로 비로그인 사용자 접근 제한 (`/dashboard`)
+    -   세션 관리 및 리다이렉트 처리
+-   [x] **Story 3.4: 개인화된 요약 및 히스토리 연동**
+    -   요약 생성 시 실제 User ID 연결
+    -   내 히스토리만 조회하는 RLS(Row Level Security) 또는 쿼리 필터링 적용
+    -   히스토리 상세 페이지 권한 확인 로직 추가
 
 ### Epic 4: 결제 시스템 (수익화)
 

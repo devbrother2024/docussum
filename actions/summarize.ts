@@ -6,6 +6,7 @@ import { summaries, users } from '@/db/schema'
 import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { Content, Part } from '@google/genai'
+import { createClient } from '@/lib/supabase/server'
 
 interface SummaryResult {
     tldr: string
@@ -103,36 +104,60 @@ export async function generateSummary(
         const parsedResult = JSON.parse(resultText) as SummaryResult
 
         // === Save to Database ===
-        // Note: In Epic 3 (Auth), we will use the actual logged-in user ID.
-        // For now, we'll use a placeholder or create a temporary guest user if needed.
+        // Get the authenticated user
+        const supabase = await createClient()
+        const {
+            data: { user },
+            error: authError
+        } = await supabase.auth.getUser()
 
-        const DEMO_EMAIL = 'demo@docusumm.com'
-        let userId = ''
+        if (authError || !user) {
+            return {
+                success: false,
+                error: '인증이 필요합니다. 로그인해주세요.'
+            }
+        }
 
-        // Check if demo user exists
+        // Check if user exists in public.users table
         const existingUsers = await db
             .select()
             .from(users)
-            .where(eq(users.email, DEMO_EMAIL))
+            .where(eq(users.id, user.id))
 
-        if (existingUsers.length > 0) {
-            userId = existingUsers[0].id
-        } else {
-            console.warn('No demo user found. Skipping DB save for now.')
+        if (existingUsers.length === 0) {
+            // User might not have been created yet (should be handled by trigger, but just in case)
+            return {
+                success: false,
+                error: '사용자 정보를 찾을 수 없습니다.'
+            }
         }
 
-        if (userId) {
-            await db.insert(summaries).values({
-                userId: userId,
-                type: type,
-                originalContent: content,
-                tldr: parsedResult.tldr,
-                content: parsedResult.content
-            })
-
-            // Refresh dashboard/history
-            revalidatePath('/dashboard')
+        // Check credits
+        const userData = existingUsers[0]
+        if (userData.credits < 1) {
+            return {
+                success: false,
+                error: '크레딧이 부족합니다. 크레딧을 충전해주세요.'
+            }
         }
+
+        // Save summary
+        await db.insert(summaries).values({
+            userId: user.id,
+            type: type,
+            originalContent: content,
+            tldr: parsedResult.tldr,
+            content: parsedResult.content
+        })
+
+        // Deduct credit
+        await db
+            .update(users)
+            .set({ credits: userData.credits - 1 })
+            .where(eq(users.id, user.id))
+
+        // Refresh dashboard/history
+        revalidatePath('/dashboard')
 
         return {
             success: true,

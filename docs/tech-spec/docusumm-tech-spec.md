@@ -140,9 +140,19 @@ create table public.credit_transactions (
 
 ### 단계 3: 인증 및 계정 (Epic 3)
 
--   Supabase Auth 설정.
--   `Middleware`를 통한 보호된 라우트(Protected Routes) 구현.
--   DB(`summaries` 테이블) 연동하여 사이드바 히스토리 조회 및 상세 보기 기능 구현.
+-   **3-1. 환경 설정 및 로그인 UI**
+    -   `@supabase/supabase-js`, `@supabase/ssr` 설치.
+    -   `lib/supabase` 유틸리티(Server/Client) 구성.
+    -   `/login` 페이지 및 Google OAuth 버튼 구현.
+-   **3-2. 사용자 트리거 및 크레딧**
+    -   Supabase `auth.users` -> `public.users` 동기화 트리거 함수 작성.
+    -   가입 시 `credits` 기본값(3) 확인.
+-   **3-3. 미들웨어 및 보안**
+    -   `middleware.ts`에서 세션 검증 로직 구현.
+    -   `/dashboard` 경로 진입 시 인증 여부 체크.
+-   **3-4. 데이터 연동**
+    -   `actions/summarize.ts`에서 `auth().getUser()`로 사용자 식별.
+    -   `summaries` 테이블 조회 시 `eq(summaries.userId, user.id)` 필터 적용.
 
 ### 단계 4: 결제 시스템 (Epic 4)
 
