@@ -25,7 +25,8 @@ export function InputPanel({ onSummarize, isLoading }: InputPanelProps) {
     const url = e.target.value;
     setYoutubeUrl(url);
     // Simple YouTube URL validation regex
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    const youtubeRegex =
+      /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
     setIsUrlValid(url === "" || youtubeRegex.test(url));
   };
 
@@ -85,7 +86,8 @@ export function InputPanel({ onSummarize, isLoading }: InputPanelProps) {
               onChange={handleUrlChange}
               className={cn(
                 "h-12 text-base",
-                !isUrlValid && "border-destructive focus-visible:ring-destructive"
+                !isUrlValid &&
+                  "border-destructive focus-visible:ring-destructive"
               )}
               disabled={isLoading}
             />
@@ -115,4 +117,3 @@ export function InputPanel({ onSummarize, isLoading }: InputPanelProps) {
     </div>
   );
 }
-

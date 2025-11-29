@@ -1,7 +1,7 @@
 {
-    "mcpServers": {
-        "stripe": {
-            "url": "https://mcp.stripe.com"
-        }
+  "mcpServers": {
+    "stripe": {
+      "url": "https://mcp.stripe.com"
     }
+  }
 }
