@@ -1,5 +1,6 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,12 +34,14 @@ export default function LoginPage() {
 
       if (error) {
         console.error("Login error:", error);
+        Sentry.captureException(error);
         alert("로그인 중 오류가 발생했습니다: " + error.message);
         setIsLoading(false);
       }
       // 성공 시 리다이렉트되므로 여기서는 아무것도 하지 않음
     } catch (error) {
       console.error("Unexpected error:", error);
+      Sentry.captureException(error);
       alert("예상치 못한 오류가 발생했습니다.");
       setIsLoading(false);
     }

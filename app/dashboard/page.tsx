@@ -1,5 +1,6 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { InputPanel } from "./components/input-panel";
@@ -55,6 +56,7 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error("An unexpected error occurred", error);
+      Sentry.captureException(error);
       alert("An unexpected error occurred");
     } finally {
       setIsLoading(false);

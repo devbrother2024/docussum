@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { resend } from "@/lib/resend/client";
 import { render } from "@react-email/render";
 import SummaryCompleteEmail from "@/emails/summary-complete";
@@ -32,12 +33,14 @@ export async function sendSummaryEmail({
 
     if (error) {
       console.error("Failed to send email:", error);
+      Sentry.captureException(error);
       return { success: false, error };
     }
 
     return { success: true, data };
   } catch (error) {
     console.error("Email sending error:", error);
+    Sentry.captureException(error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send email",

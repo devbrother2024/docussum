@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/db";
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     console.error("Webhook signature verification failed:", err);
+    Sentry.captureException(err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -90,6 +92,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true });
     } catch (error) {
       console.error("Error processing webhook:", error);
+      Sentry.captureException(error);
       return NextResponse.json(
         { error: "Internal server error" },
         { status: 500 }

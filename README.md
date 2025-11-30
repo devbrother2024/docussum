@@ -12,6 +12,7 @@
 - **Email**: Resend
 - **AI**: Google Gemini API
 - **Styling**: Tailwind CSS
+- **Error Monitoring**: Sentry
 
 ## 개발 환경 설정
 
@@ -46,6 +47,11 @@ RESEND_API_KEY=""
 
 # App URL
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Sentry Error Monitoring
+NEXT_PUBLIC_SENTRY_DSN=""  # 클라이언트용 (브라우저에 노출)
+SENTRY_DSN=""              # 서버용
+SENTRY_AUTH_TOKEN=""       # Source Maps 업로드용 (선택사항)
 ```
 
 ### 3. 데이터베이스 마이그레이션
@@ -129,6 +135,72 @@ Cursor의 `mcp.json` 파일에 다음 설정을 추가하세요:
 - [Resend 기술문서](https://resend.com/docs)
 - [Resend Custom Domains 설정 방법](https://resend.com/docs/dashboard/receiving/custom-domains)
 
+## Sentry 에러 모니터링
+
+이 프로젝트는 [Sentry](https://sentry.io/)를 사용하여 에러 모니터링 및 성능 추적을 수행합니다.
+
+### 1. Sentry 계정 설정
+
+1. [Sentry](https://sentry.io/) 회원가입 및 로그인
+2. 새 프로젝트 생성 (Next.js 플랫폼 선택)
+3. DSN 발급 후 `.env.local`에 설정:
+   ```env
+   NEXT_PUBLIC_SENTRY_DSN="https://..."
+   SENTRY_DSN="https://..."
+   ```
+
+### 2. 자동 에러 캡처
+
+Sentry는 다음 에러들을 자동으로 캡처합니다:
+
+- **클라이언트 사이드 미처리 에러**: 브라우저에서 발생하는 모든 미처리 예외
+- **서버 API 라우트 에러**: API 라우트에서 throw된 에러
+- **글로벌 에러 바운더리**: React 에러 바운더리에서 잡힌 에러
+- **서버 액션 에러**: `"use server"` 함수에서 발생한 에러
+- **클라이언트 try-catch 에러**: 수동으로 처리된 에러도 Sentry에 전송
+
+### 3. 수동 에러 캡처
+
+try-catch 블록에서 에러를 처리할 때 Sentry에 전송하려면:
+
+```typescript
+import * as Sentry from "@sentry/nextjs";
+
+try {
+  // 코드 실행
+} catch (error) {
+  console.error("Error occurred:", error);
+  Sentry.captureException(error); // Sentry에 에러 전송
+}
+```
+
+### 4. Source Maps 업로드 (선택사항)
+
+프로덕션에서 더 나은 스택 트레이스를 위해 Source Maps를 업로드할 수 있습니다:
+
+1. Sentry 대시보드에서 Auth Token 생성
+2. `.env.local`에 설정:
+   ```env
+   SENTRY_AUTH_TOKEN="sntrys_..."
+   ```
+3. 빌드 시 자동으로 Source Maps가 업로드됩니다
+
+### 5. Sentry 설정 파일
+
+프로젝트의 Sentry 설정은 다음 파일들에 있습니다:
+
+- `instrumentation.ts` - 서버/엣지 런타임 분기
+- `instrumentation-client.ts` - 클라이언트 초기화
+- `sentry.server.config.ts` - Node.js 서버 설정
+- `sentry.edge.config.ts` - Edge 런타임 설정
+- `app/global-error.tsx` - 글로벌 에러 바운더리
+- `next.config.ts` - Sentry 플러그인 설정
+
+### 참고 링크
+
+- [Sentry Next.js 가이드](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
+- [Sentry 대시보드](https://sentry.io/)
+
 ## 프로덕션 배포
 
 ### 배포 전 준비사항
@@ -157,6 +229,9 @@ Cursor의 `mcp.json` 파일에 다음 설정을 추가하세요:
    - 배포 후 다음 변수는 배포 도메인 기반으로 변경:
      - `STRIPE_WEBHOOK_SECRET`: Stripe 대시보드에서 발급
      - `NEXT_PUBLIC_APP_URL`: Vercel 배포 도메인
+     - `NEXT_PUBLIC_SENTRY_DSN`: Sentry 프로젝트 DSN
+     - `SENTRY_DSN`: Sentry 프로젝트 DSN (서버용)
+     - `SENTRY_AUTH_TOKEN`: Source Maps 업로드용 (선택사항)
 
 3. **Stripe Webhook URL 설정**
    - Stripe 대시보드에서 웹훅 URL을 Vercel 배포 도메인으로 설정
@@ -187,3 +262,4 @@ Cursor의 `mcp.json` 파일에 다음 설정을 추가하세요:
 - [Supabase Documentation](https://supabase.com/docs)
 - [Stripe Documentation](https://docs.stripe.com/)
 - [Resend Documentation](https://resend.com/docs)
+- [Sentry Documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/)

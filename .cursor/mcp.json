@@ -2,6 +2,9 @@
   "mcpServers": {
     "stripe": {
       "url": "https://mcp.stripe.com"
+    },
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/8cdf9989a730/docussum"
     }
   }
 }

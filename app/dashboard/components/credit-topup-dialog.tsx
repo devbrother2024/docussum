@@ -1,5 +1,6 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ export function CreditTopupDialog() {
       }
     } catch (error) {
       console.error("Error creating checkout session:", error);
+      Sentry.captureException(error);
       alert("결제 세션 생성 중 오류가 발생했습니다.");
       setIsLoading(false);
     }

@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import genAI from "@/lib/gemini/client";
 import { db } from "@/db";
 import { summaries, users } from "@/db/schema";
@@ -166,6 +167,7 @@ export async function generateSummary(
     }).catch((error) => {
       // Log error but don't fail the request
       console.error("Failed to send summary email:", error);
+      Sentry.captureException(error);
     });
 
     // Refresh dashboard/history
@@ -177,6 +179,7 @@ export async function generateSummary(
     };
   } catch (error) {
     console.error("Summary generation failed:", error);
+    Sentry.captureException(error);
     return {
       success: false,
       error:

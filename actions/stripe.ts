@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { stripe, CREDIT_PACKAGES, type CreditPackage } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
@@ -51,6 +52,7 @@ export async function createCheckoutSession(
     return { success: true, url: session.url };
   } catch (error) {
     console.error("Error creating checkout session:", error);
+    Sentry.captureException(error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
