@@ -11,7 +11,10 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "email:dev": "email dev",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:auth": "playwright test --project=setup"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
@@ -41,6 +44,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@react-email/preview-server": "^5.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
